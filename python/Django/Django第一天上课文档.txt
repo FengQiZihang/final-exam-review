@@ -1,0 +1,74 @@
+命令行方式创建django项目
+
+# 0.安装django
+pip install django
+
+# 1.创建项目
+django-admin startproject Demo
+
+# 2.数据迁移
+python manage.py makemigrations # 根据类生成创建数据库表的迁移文件
+python manage.py migrate # 执行迁移文件，创建数据库表
+
+# 3.创建超级用户
+python manage.py createsuperuser
+
+# 4.启动项目
+python manage.py runserver 127.0.0.1:8001
+
+# 5.设置中文
+# 在settings.py中设置LANGUAGE_CODE = 'zh-hans'
+# 在settings.py中设置TIME_ZONE = 'Asia/Shanghai'
+
+# 访问http://127.0.0.1:8001/admin/
+# 登录后即可使用Django的管理界面
+
+# 6.优化界面UI
+pip install django-simpleui
+# 在settings.py中添加INSTALLED_APPS = ['simpleui']
+# 重启项目
+python manage.py runserver 127.0.0.1:8001
+
+
+# ------------- 开始构建应用 -----------------
+
+# 1.创建应用
+python manage.py startapp App1
+
+# 2.注册应用
+# 在settings.py中添加INSTALLED_APPS = ['App1']
+
+# 3.创建模型
+# 在App1/models.py中创建模型类
+class App1Model(models.Model):
+    name = models.CharField(max_length=100)
+    gender = models.CharField(max_length=10)
+# 运行以下命令创建数据库表
+python manage.py makemigrations App1
+python manage.py migrate App1
+
+# 4.关联数据库
+# 选择SQLlite->db.sqlite3
+
+# 5.注册模型
+# 在App1/admin.py中注册模型类
+@admin.register(App1Model)
+class App1ModelAdmin(admin.ModelAdmin):
+    list_display = ('name', 'gender')
+
+# 6.中文显示（models.py，app.py两处）
+# 在App1/models.py中添加Meta类
+class App1Model(models.Model):
+    name = models.CharField(max_length=100, verbose_name='姓名')
+    gender = models.CharField(max_length=10, verbose_name='性别')
+    class Meta:
+        verbose_name = '应用1模型'
+        verbose_name_plural = '应用1模型'
+# 在App1/apps.py中添加Meta类
+class App1Config(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'App1'
+    verbose_name = '应用1'
+    verbose_name_plural = '应用1'
+
+
